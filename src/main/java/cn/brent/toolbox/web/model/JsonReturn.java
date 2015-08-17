@@ -3,7 +3,7 @@ package cn.brent.toolbox.web.model;
 public class JsonReturn {
 
 	boolean ok;
-	String errCode;
+	Integer errCode;
 	String msg;
 	Object data;
 
@@ -11,7 +11,7 @@ public class JsonReturn {
 		return ok;
 	}
 
-	public String getErrCode() {
+	public Integer getErrCode() {
 		return errCode;
 	}
 
@@ -28,7 +28,7 @@ public class JsonReturn {
 		return this;
 	}
 
-	public JsonReturn setErrCode(String errCode) {
+	public JsonReturn setErrCode(int errCode) {
 		this.errCode = errCode;
 		return this;
 	}
@@ -43,7 +43,7 @@ public class JsonReturn {
 		return this;
 	}
 
-	public static JsonReturn fail(String errCode, String msg) {
+	public static JsonReturn fail(int errCode, String msg) {
 		JsonReturn re = new JsonReturn();
 		re.setOk(false);
 		re.setErrCode(errCode);
@@ -80,7 +80,7 @@ public class JsonReturn {
 	public static JsonReturn expired() {
 		JsonReturn re = new JsonReturn();
 		re.setOk(false);
-		re.setErrCode("100");
+		re.setErrCode(100);
 		return re;
 	}
 }
