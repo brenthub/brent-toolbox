@@ -42,6 +42,26 @@ public class JsonReturn {
 		this.data = data;
 		return this;
 	}
+	
+	public JsonReturn() {
+		this.ok=true;
+	}
+	
+	public JsonReturn(String msg) {
+		this.ok=false;
+		this.msg=msg;
+	}
+	
+	public JsonReturn(int code,String msg) {
+		this.ok=false;
+		this.errCode=code;
+		this.msg=msg;
+	}
+	
+	public JsonReturn(Object data) {
+		this.ok=true;
+		this.data=data;
+	}
 
 	public static JsonReturn fail(int errCode, String msg) {
 		JsonReturn re = new JsonReturn();
