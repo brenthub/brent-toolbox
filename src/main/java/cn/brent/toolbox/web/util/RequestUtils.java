@@ -88,7 +88,7 @@ public class RequestUtils {
 	
 
     /**
-     *返回qhee.com
+     *返回Domain
      */
     public static String getDomain(HttpServletRequest request){
     	String pname="X-Real-Host";
