@@ -6,6 +6,7 @@ import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
+import javax.crypto.spec.IvParameterSpec;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -23,6 +24,8 @@ import cn.brent.toolbox.utils.EncodeUtil;
 public class DESEncry {
 
 	private static String strDefaultKey = "DESEncry";
+	
+	private static String DESIV = "DESIV";
 	
 	private final static String DES = "DES";
 	
@@ -61,7 +64,40 @@ public class DESEncry {
 			encryptCipher = Cipher.getInstance(DES);
 			encryptCipher.init(Cipher.ENCRYPT_MODE, securekey, sr);
 			decryptCipher = Cipher.getInstance("DES");
-			decryptCipher.init(Cipher.DECRYPT_MODE, securekey,sr);
+			decryptCipher.init(Cipher.DECRYPT_MODE, securekey, sr);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+	}
+	
+	/**
+	 * 指定密钥构造方法
+	 * 
+	 * @param strKey
+	 *            指定的密钥
+	 * @throws Exception
+	 */
+	public DESEncry(String strKey,String desIv) {
+		try {
+			if(strKey.length()<16){
+				strKey=StringUtils.rightPad(strKey, 16, '0');
+			}
+			if(desIv==null){
+				desIv=DESIV;
+			}
+			// 向量
+			IvParameterSpec iv = new IvParameterSpec(desIv.getBytes());
+			// 从原始密钥数据创建DESKeySpec对象
+			DESKeySpec dks = new DESKeySpec(strKey.getBytes());
+			// 创建一个密钥工厂，然后用它把DESKeySpec转换成SecretKey对象
+			SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(DES);
+			SecretKey securekey = keyFactory.generateSecret(dks);
+			// Cipher对象实际完成解密操作
+			encryptCipher =Cipher.getInstance("DES/CBC/PKCS5Padding");
+			encryptCipher.init(Cipher.ENCRYPT_MODE, securekey, iv);
+			decryptCipher =Cipher.getInstance("DES/CBC/PKCS5Padding");
+			decryptCipher.init(Cipher.DECRYPT_MODE, securekey, iv);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
@@ -76,9 +112,26 @@ public class DESEncry {
 	 * @return 加密后的字符串
 	 * @throws Exception
 	 */
-	public String encrypt(String strIn){
+	public String encryptHex(String strIn){
 		try {
 			return EncodeUtil.hexEncode(encryptCipher.doFinal(strIn.getBytes()));
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+	}
+	
+	/**
+	 * 加密字符串并用十六进制编码
+	 * 
+	 * @param strIn
+	 *            需加密的字符串
+	 * @return 加密后的字符串
+	 * @throws Exception
+	 */
+	public String encryptBase64(String strIn){
+		try {
+			return EncodeUtil.base64Encode(encryptCipher.doFinal(strIn.getBytes()));
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
@@ -93,9 +146,26 @@ public class DESEncry {
 	 * @return 解密后的字符串
 	 * @throws Exception
 	 */
-	public String decrypt(String strIn){
+	public String decryptHex(String strIn){
 		try {
 			return new String(decryptCipher.doFinal(EncodeUtil.hexDecode(strIn)));
+		}catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+	}
+	
+	/**
+	 * 解密字符串
+	 * 
+	 * @param strIn
+	 *            需解密的字符串
+	 * @return 解密后的字符串
+	 * @throws Exception
+	 */
+	public String decryptBase64(String strIn){
+		try {
+			return new String(decryptCipher.doFinal(EncodeUtil.base64Decode(strIn)));
 		}catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
